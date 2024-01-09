@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/web/View/Style/styles_cotizaciones.css">
+<script src="/web/Controller/JsControllerConfig/script1.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<title>Menú Lateral con Icono</title>
+</head>
+<body>
+<div class="container">
+    <button class="toggle-button" onclick="toggleSidebar()">
+        <img  src="/web/View/Style/Icon/menu.png" alt="Menú" class="icon" id="menuIcon">
+    </button>
+</div>
+    <div class="sidebar" id="sidebar">
+        <img src="/web/View/Style/Icon/home.png" alt="Home" class="Home" id="HomeIcon">
+        <h2>El Gigante del hogar</h2>
+        <ul>
+            <li class="contenedormenu">
+                <p><a href="#" id="mostrarCotizaciones"><img src="/web/View/Style/Icon/mas.png" alt="Icono Cotizaciones"> Cotizaciones</a></p>
+                <ul id="listaCotizaciones" style="display: none;">
+                    <li><a href="/web/View/Admin/cotizaciones.html">Lista de Cotizaciones</a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul>
+            <li>
+                <p><a href="#" id="mostrarUsuarios"><img src="/web/View/Style/Icon/mas.png" alt="Icono Usuarios"> Usuarios</a></p>
+                <ul id="listaUsuarios" style="display: none;">
+                    <li><a href="#">Administrar</a></li>
+                    <li><a href="#">Usuarios</a></li>
+                </ul>
+            </li>
+            <li>
+                <p><a href="#" id="mostrarHistorial"><img src="/web/View/Style/Icon/history.png" alt="Icono Historial"> Historial</a></p>
+                <ul id="listaHistorial" style="display: none;">
+                    <li><a href="#">Cotizaciones</a></li>
+                </ul>
+            </li>
+            <li>
+                <p><a id="mostrarlinea"><img src="/web/View/Style/Icon/linea.png" alt="Icono Linea"></a></p>
+            </li>
+            <li>
+                <p><a href="#" id="mostrarConfiguracion"><img src="/web/View/Style/Icon/rueda-dentada.png" alt="Icono Configuración">Configuración</a></p>  
+            </li>
+            <li>
+                <p><a href="#" id="mostrarSalida"><img src="/web/View/Style/Icon/salida.png" alt="Icono Salir">Cerrar Sesión</a></p>
+                </ul>
+            </li>
+    </div>
+    <div class="content">
+        <div class="content2">
+        <h1>Bienvenido de nuevo, @Administrador</h1>
+        <p>Te presentamos los items de la cotizacion.</p>
+    </div>
+    </div>
+        <div class="user-info">
+                <div class="user-logo">
+                    <img src="/web/View/Style/logos/901140179.jpg" alt="Logo Usuario">
+                     </div>
+                <div class="user-role">
+        <p>Administrador</p>
+    </div>
+</div>
+<div class="search-container">
+    <div class="search-box">
+        <h3 class="buscar-texto">Busqueda de items</h3>
+        <div class="search-input">
+            <input type="text" placeholder="Buscar">
+            <button class="search-button-items">
+                <i class="fas fa-search"></i> <!-- Icono de lupa -->
+            </button>
+        </div>
+    </div>
+    <div class="import-export">
+        <p class="import-text">Importar</p>
+        <i class="fas fa-arrow-down"></i>
+        <p class="export-text">Exportar</p>
+        <i class="fas fa-arrow-up"></i>
+    </div>
+</div>
+<div>
+    <div class="date-container">
+    <div class="date-element"></div>
+</div>
+<table id="table-container" class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Item</th>
+            <th>Código de Barras</th>
+            <th>Referencia</th>
+            <th>Descripción</th>
+            <th>UND</th>
+            <th>Precio Base</th>
+            <th>Precio con Descuento</th>
+            <th>Descuento (%)</th>
+            <th>Estado</th>
+            <th>Aprobar</th>
+        </tr>
+    </thead>
+    <tbody id="tbodyItems">
+    </tbody>
+</table>
+</body>
+<script>
+const enlaceCotizaciones = document.getElementById("mostrarCotizaciones");
+const listaCotizaciones = document.getElementById("listaCotizaciones");
+
+enlaceCotizaciones.addEventListener("click", function() {
+    if (listaCotizaciones.style.display === "none") {
+        listaCotizaciones.style.display = "block";
+    } else {
+        listaCotizaciones.style.display = "none";
+    }
+});
+
+const enlaceUsuarios = document.getElementById("mostrarUsuarios");
+const listaUsuarios = document.getElementById("listaUsuarios");
+
+enlaceUsuarios.addEventListener("click", function() {
+    if (listaUsuarios.style.display === "none") {
+        listaUsuarios.style.display = "block";
+    } else {
+        listaUsuarios.style.display = "none";
+    }
+});
+
+
+const enlaceHistorial = document.getElementById("mostrarHistorial");
+const listaHistorial = document.getElementById("listaHistorial");
+
+enlaceHistorial.addEventListener("click", function() {
+    if (listaHistorial.style.display === "none") {
+        listaHistorial.style.display = "block";
+    } else {
+        listaHistorial.style.display = "none";
+    }
+});
+
+const currentDate = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateElement = document.querySelector(".date-element");
+    dateElement.textContent = currentDate.toLocaleDateString('es-ES', options);
+
+// Obtener el elemento de la imagen por su ID
+const homeIcon = document.getElementById("HomeIcon");
+
+// Agregar un evento de clic al ícono
+homeIcon.addEventListener("click", function() {
+  // Redirigir a la página que deseas
+  window.location.href = "/web/View/Admin/admindashboard.html"; // Cambia  por la URL 
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+            fetch("/web/Controller/BdControllerConfig/obtener_items.php")
+                .then(response => response.json())
+                .then(items => {
+                    var tbody = document.getElementById("tbodyItems");
+
+                    items.forEach(function(item) {
+                        var row = document.createElement("tr");
+
+                        row.innerHTML = `
+                            <td>${item.order_id}</td>
+                            <td>${item.item_number}</td>
+                            <td>${item.codigo_barra}</td>
+                            <td>${item.referencia}</td>
+                            <td>${item.descripcion}</td>
+                            <td>${item.unidad_empaque}</td>
+                            <td>${item.precio_base}</td>
+                            <td>${item.precio_con_descuento}</td>
+                            <td>${item.descuento_porcentaje}</td>
+                            <td>${item.estado}</td>
+                            <td>
+                                <button onclick="toggleEncenderApagar(this)">${item.estado === 'Aprobado' ? 'No' : 'Aprobar'}</button>
+                            </td>
+                        `;
+
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error al obtener los datos:", error);
+                });
+        });
+
+        function toggleEncenderApagar(button) {
+            // Obtener la fila correspondiente al botón
+            var row = button.parentElement.parentElement;
+
+            // Cambiar el estado y el texto del botón
+            var estadoActual = row.cells[9].textContent; // Cambiar el índice si es necesario
+            row.cells[9].textContent = estadoActual === 'Aprobado' ? 'No Aprobado' : 'Aprobado';
+
+            // Aquí puedes agregar lógica adicional para realizar acciones cuando se encienda o apague
+        }
+</script>
+</html>

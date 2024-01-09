@@ -1,0 +1,6 @@
+CREATE USER 'superadmingh'@'localhost' IDENTIFIED BY 'G-H2023**07';
+GRANT ALL PRIVILEGES ON tu_base_de_datos.* TO 'superadmingh'@'localhost';
+FLUSH PRIVILEGES;
+
+GRANT ALL PRIVILEGES ON cotizaciones_gdh.* TO 'superadmingh'@'localhost';
+FLUSH PRIVILEGES;

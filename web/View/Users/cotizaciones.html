@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/web/View/Style/users/styles_cotizacionesUsers.css">
+    <script src="/web/Controller/JsControllerConfig/script1.js"></script>
+    <script src="/web/Controller/JsControllerConfig/tabla.js"></script>
+    <script src="/web/Controller/JsControllerConfig/Exportar_importar/export.js"></script>
+    <script src="/web/Controller/JsControllerConfig/search-input.js"></script>
+    <script src="/web/Controller/JsControllerConfig/Razon_social/razon_social.js"></script>
+    <script src="/web/Controller/JsControllerConfig/Exportar_importar/import.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/autoNumeric/4.1.0/autoNumeric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    
+    <title>Menú Lateral con Icono</title>
+</head>
+<body>
+    <div class="container">
+        <button class="toggle-button" onclick="toggleSidebar()">
+            <img src="/web/View/Style/Icon/menu.png" alt="Menú" class="icon" id="menuIcon">
+        </button>
+    </div>
+    <div class="sidebar" id="sidebar">
+        <img src="/web/View/Style/Icon/home.png" alt="Home" class="Home" id="HomeIcon">
+        <h2>El Gigante del hogar</h2>
+        <ul>
+            <li class="contenedormenu">
+                <p><a href="#" id="mostrarCotizaciones"><img src="/web/View/Style/Icon/mas.png" alt="Icono Cotizaciones"> Cotizaciones</a></p>
+                <ul id="listaCotizaciones" style="display: none;">
+                    <li><a href="/web/View/Users/cotizaciones.html">Lista de Cotizaciones</a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul>
+            <li>
+                <p><a href="#" id="mostrarHistorial"><img src="/web/View/Style/Icon/history.png" alt="Icono Historial"> Historial</a></p>
+                <ul id="listaHistorial" style="display: none;">
+                    <li><a href="#">Cotizaciones</a></li>
+                </ul>
+            </li>
+            <li>
+                <p><a id="mostrarlinea"><img src="/web/View/Style/Icon/linea.png" alt="Icono Linea"></a></p>
+            </li>
+            <li>
+                <p><a href="#" id="mostrarConfiguracion"><img src="/web/View/Style/Icon/rueda-dentada.png" alt="Icono Configuración">Configuración</a></p>
+            </li>
+            <li>
+                <p><a href="#" id="mostrarSalida"><img src="/web/View/Style/Icon/salida.png" alt="Icono Salir">Cerrar Sesión</a></p>
+            </li>
+        </ul>
+    </div>
+    <div class="content">
+        <div class="content2">
+            <h1>Bienvenido de nuevo, <span id="razonSocial"></span></h1>
+            <p>Te presentamos los items de la cotización.</p>
+        </div>
+    </div>    
+    <div class="user-info">
+        <div class="user-logo">
+            <img src="/web/View/Style/logos/901140179.jpg" alt="Logo Usuario">
+        </div>
+        <div class="user-role">
+           <p>Usuario</p> 
+        </div>
+    </div>
+    <div class="search-container">
+        <div class="search-box">
+            <h3 class="buscar-texto">Busqueda de items</h3>
+            <div class="search-input">
+                <input type="text" placeholder="Buscar">
+            </div>
+        </div>
+        <div class="import-export">
+            <form id="import-form" action="/web/Controller/BdControllerConfig/procesar_importacion.php" method="post" enctype="multipart/form-data">
+              <input type="file" name="xlsx-file" id="file-input" accept=".xlsx">
+              <input type="hidden" name="processed-data" id="processed-data" value="">
+              <label for="file-input">Importar</label>
+            </form>                                  
+            <i class="fas fa-arrow-down"></i>
+            <button id="export-button">Exportar</button>
+            <i class="fas fa-arrow-up"></i>
+          </div>
+          
+        
+        
+    </div>
+    <div>
+        <div class="date-container">
+            <div class="date-element"></div>
+        </div>
+        <table id="table-container" class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Item</th>
+                    <th>Código de Barras</th>
+                    <th>Referencia</th>
+                    <th>Descripción</th>
+                    <th>UND</th>
+                    <th>Precio Base</th>
+                    <th>Precio con Descuento</th>
+                    <th>Descuento %</th>
+                </tr>
+            </thead>
+            <tbody id="tbodyItems">
+            </tbody>
+        </table>
+        <div class="pagination">
+            <button id="prev-button">Anterior</button>
+            <button id="next-button">Siguiente</button>
+        </div>
+    </div>
+<script>
+const enlaceCotizaciones = document.getElementById("mostrarCotizaciones");
+const listaCotizaciones = document.getElementById("listaCotizaciones");
+
+enlaceCotizaciones.addEventListener("click", function() {
+    if (listaCotizaciones.style.display === "none") {
+        listaCotizaciones.style.display = "block";
+    } else {
+        listaCotizaciones.style.display = "none";
+    }
+});
+
+
+
+const enlaceHistorial = document.getElementById("mostrarHistorial");
+const listaHistorial = document.getElementById("listaHistorial");
+
+enlaceHistorial.addEventListener("click", function() {
+    if (listaHistorial.style.display === "none") {
+        listaHistorial.style.display = "block";
+    } else {
+        listaHistorial.style.display = "none";
+    }
+});
+
+const currentDate = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateElement = document.querySelector(".date-element");
+    dateElement.textContent = currentDate.toLocaleDateString('es-ES', options);
+
+// Obtener el elemento de la imagen por su ID
+const homeIcon = document.getElementById("HomeIcon");
+
+// Agregar un evento de clic al ícono
+homeIcon.addEventListener("click", function() {
+  // Redirigir a la página que deseas
+  window.location.href = "/web/View/Users/Usersdashboard.html"; // Cambia  por la URL 
+});
+
+</script>
+
+</html>

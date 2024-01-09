@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="/web/View/Style/users/styles.css">
+<script src="/web/Controller/JsControllerConfig/script1.js"></script>
+<script src="/web/Controller/JsControllerConfig/razon_social.js"></script>
+
+<script src="/web/Controller/JsControllerConfig/razon_social.js"></script>
+<title>Menú Lateral con Icono</title>
+</head>
+<body>
+<div class="container">
+    <button class="toggle-button" onclick="toggleSidebar()">
+        <img  src="/web/View/Style/Icon/menu.png" alt="Menú" class="icon" id="menuIcon">
+    </button>
+</div>
+    <div class="sidebar" id="sidebar">
+        <img src="/web/View/Style/Icon/home.png" alt="Home" class="Home" id="HomeIcon">
+        <h2>El Gigante del hogar</h2>
+        <ul>
+            <li class="contenedormenu">
+                <p><a href="#" id="mostrarCotizaciones"><img src="/web/View/Style/Icon/mas.png" alt="Icono Cotizaciones"> Cotizaciones</a></p>
+                <ul id="listaCotizaciones" style="display: none;">
+                    <li><a href="/web/View/Users/cotizaciones.html">Lista de Cotizaciones</a></li>
+                </ul>
+            </li>
+        </ul>
+        <ul>
+            <li>
+                <p><a href="#" id="mostrarHistorial"><img src="/web/View/Style/Icon/history.png" alt="Icono Historial"> Historial</a></p>
+                <ul id="listaHistorial" style="display: none;">
+                    <li><a href="#">Cotizaciones</a></li>
+                </ul>
+            </li>
+            <li>
+                <p><a id="mostrarlinea"><img src="/web/View/Style/Icon/linea.png" alt="Icono Linea"></a></p>
+            </li>
+            <li>
+                <p><a href="#" id="mostrarConfiguracion"><img src="/web/View/Style/Icon/rueda-dentada.png" alt="Icono Configuración">Configuración</a></p>  
+            </li>
+            <li>
+                <p><a href="#" id="mostrarSalida"><img src="/web/View/Style/Icon/salida.png" alt="Icono Salir">Cerrar Sesión</a></p>
+                </ul>
+            </li>
+    </div>
+    <div class="content">
+        <div class="content2">
+            <h1>Bienvenido. <span id="razonSocial"></span></h1>
+            <p>Te presentamos las cotizaciones aprobadas.</p>
+        </div>
+    </div>
+    <p2><a id="Campana"><img src="/web/View/Style/Icon/campana.png" alt="Icono Campana"><span class="notification-count">5</span></a></p2>
+        <div class="user-info">
+                <div class="user-logo">
+                    <img src="/web/View/Style/logos/901140179.jpg" alt="Logo Usuario">
+                     </div>
+                <div class="user-role">
+        <p>Usuario</p>
+    </div>
+</div>
+<div class="search-container">
+    <h3 class="buscar-texto">Buscar Cotizacion</h3>
+    <div class="search-box">
+        <input type="text" placeholder="🔍 ">
+        <button class="search-button">
+            Buscar
+        </button>
+    </div>
+    <div class="date-container">
+    <div class="date-element"></div>
+</div>
+<div class="order">
+    <h3>Cotizaciones Nuevas</h3>
+    <div class="orders-container">
+        <div id="new-orders">
+        </div>
+    </div>
+</div>
+
+</body>
+<script>
+const enlaceCotizaciones = document.getElementById("mostrarCotizaciones");
+const listaCotizaciones = document.getElementById("listaCotizaciones");
+
+enlaceCotizaciones.addEventListener("click", function() {
+    if (listaCotizaciones.style.display === "none") {
+        listaCotizaciones.style.display = "block";
+    } else {
+        listaCotizaciones.style.display = "none";
+    }
+});
+</script>
+
+<script>
+const enlaceUsuarios = document.getElementById("mostrarUsuarios");
+const listaUsuarios = document.getElementById("listaUsuarios");
+
+enlaceUsuarios.addEventListener("click", function() {
+    if (listaUsuarios.style.display === "none") {
+        listaUsuarios.style.display = "block";
+    } else {
+        listaUsuarios.style.display = "none";
+    }
+});
+</script>
+
+<script> 
+const enlaceHistorial = document.getElementById("mostrarHistorial");
+const listaHistorial = document.getElementById("listaHistorial");
+
+enlaceHistorial.addEventListener("click", function() {
+    if (listaHistorial.style.display === "none") {
+        listaHistorial.style.display = "block";
+    } else {
+        listaHistorial.style.display = "none";
+    }
+});
+const currentDate = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const dateElement = document.querySelector(".date-element");
+    dateElement.textContent = currentDate.toLocaleDateString('es-ES', options);
+
+
+
+
+// Realizar la petición AJAX para órdenes aprobadas
+function fetchApprovedOrders() {
+  const approvedOrdersContainer = document.getElementById("approved-orders");
+
+  // Realizar la petición AJAX
+  const xhr = new XMLHttpRequest();
+  xhr.open("GET", "/web/Controller/BdControllerConfig/get_access_orders.php", true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      approvedOrdersContainer.innerHTML = xhr.responseText;
+    }
+  };
+  xhr.send();
+}
+
+// Realizar la primera consulta al cargar la página
+fetchNewOrders();
+fetchApprovedOrders();
+
+// Realizar la consulta cada 1 minuto para órdenes nuevas
+setInterval(fetchNewOrders, 60000); // 60000 ms = 1 minuto
+
+// Realizar la consulta cada 1 minuto para órdenes aprobadas
+setInterval(fetchApprovedOrders, 60000); // 60000 ms = 1 minuto
+
+// Obtener el elemento de la imagen por su ID
+const homeIcon = document.getElementById("HomeIcon");
+
+// Agregar un evento de clic al ícono
+homeIcon.addEventListener("click", function() {
+  // Redirigir a la página que deseas
+  window.location.href = "/web/View/users/usersdashboard.html"; 
+});
+
+
+</script>
+</html>

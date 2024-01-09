@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" type="text/css" href="/web/View/Style/styles_inicio.css">
+  <link rel="stylesheet" type="text/css" href="/web/View/Style/alert.css">
+  <link rel="stylesheet" type="text/css" href="/web/View/Style/3modal.css">
+  <link rel="stylesheet" type="text/css" href="/web/View/Style/nw_modal.css">
+  <link rel="stylesheet" type="text/css" href="/web/View/Style/restpw.css">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="/web/Controller/JsControllerConfig/script.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="image-container">
+      <img src="/web/View/Style/img/LogoGigantePose.png" alt="Logo de la empresa">
+    </div>
+    <div class="login-container">
+      <h2>Iniciar sesión</h2>
+      <form action="/web/Controller/BdControllerConfig/login.php" method="POST">
+        <input type="text" name="username" placeholder="Nombre de usuario">
+        <input type="password" name="password" placeholder="Contraseña">
+        <div class="form-actions">
+          <button type="submit">Iniciar sesión</button>
+          <a class="password" href="#" onclick="openForgotPasswordModal()">¿Olvidaste tu contraseña?</a>
+        </div>
+      </form>
+      <div id="forgotPasswordModal" class="modal">
+        <div class="modal-content">
+          <span onclick="closeForgotPasswordModal()" style="float: right; cursor: pointer;">&times;</span>
+          <h2>Restablecer contraseña</h2>
+          <p>Por favor, introduzca su correo electrónico. Recibirá un código para restablecer su contraseña.</p>
+          <input type="email" id="emailInput" placeholder="Correo electrónico">
+          <button onclick="sendResetCode()" class="enviarcodigo">Enviar código</button>
+        </div>
+      </div>
+      <!-- Modal para ingresar el código -->
+      <div id="enterCodeModal" class="modal">
+        <div class="modal-content">
+          <span onclick="closeEnterCodeModal()" style="float: right; cursor: pointer;">&times;</span>
+          <h2>Ingresar Código de Restablecimiento</h2>
+          <p>Por favor, ingrese el código de restablecimiento enviado a su correo electrónico.</p>
+          <input type="number" id="codeInput" placeholder="Código de restablecimiento">
+          <button id="verifyCodeButton" onclick="verifyCode()">Verificar Código</button>
+        </div>
+      </div>
+      <!-- Nuevo elemento div para mostrar la alerta -->
+      <div id="verificationSuccessAlert" style="display: none; text-align: center;">
+        <h2>¡Código verificado con éxito!</h2>
+        <p>Redirigiendo a la página de restablecimiento...</p>
+      </div>
+     <!--  Nuevo elemento div para mostrar el modal de nueva contraseña -->
+    <div id="newPasswordModal" class="modal">
+      <div class="modal-content">
+        <span onclick="closeNewPasswordModal()" style="float: right; cursor: pointer;">&times;</span>
+        <h2>Nueva Contraseña</h2>
+        <p>Por favor, ingrese su nueva contraseña.</p>
+        <input type="password" id="newPasswordInput" placeholder="Nueva contraseña">
+        <button onclick="resetPassword()">Guardar Contraseña</button>
+      </div>
+    </div>
+
+    </div>
+  </div>
+</body>
+</html>

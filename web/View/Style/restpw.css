@@ -1,0 +1,64 @@
+/* Estilos para el modal "Nueva Contraseña" */
+#newPasswordModal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+#newPasswordModal .modal-content {
+  background-color: rgb(255, 255, 255);
+  padding: 20px;
+  border: 1px solid #888;
+  max-width: 400px; /* Ajusta el ancho del cuadro según tus necesidades */
+  text-align: center;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añade una sombra al modal */
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Centra vertical y horizontalmente */
+}
+
+/* Resto de los estilos se mantienen igual */
+#newPasswordModal h2 {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+#newPasswordModal p {
+  font-size: 16px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+#newPasswordModal #newPasswordInput {
+  width: 90%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 15px; /* Ajusta el tamaño de fuente para hacerlo un poco más grande */
+}
+
+#newPasswordModal button {
+  background-color: #bf0411;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  width: 100%; /* Ajusta el ancho del botón para que ocupe todo el espacio disponible */
+}
