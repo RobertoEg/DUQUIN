@@ -253,119 +253,89 @@ function displayPage() {
         cell.closest('tr').find('.edit-discount-percentage').text(formatPercentage(descuento));
     }
     
-    function saveItemData(cell) {
+     // Función para guardar los datos del ítem
+     function saveItemData(cell) {
         var itemID = cell.data('item-id');
         var i = cell.closest('tr').index();
         var precioBase = parseFloat(cell.closest('tr').find('.edit-price').text().replace(/\./g, '').replace('$', '').replace(',', '.'));
         var precioDescuento = parseFloat(cell.closest('tr').find('.edit-price-discount').text().replace(/\./g, '').replace('$', '').replace(',', '.'));
-    
+        var descuentoPorcentaje = parsePercentageValue(cell.closest('tr').find('.edit-discount-percentage').text());
+
         // Verificar si el ítem ya existe en el almacenamiento de datos
         if (storedItemData[itemID]) {
+            storedItemData[itemID].codigoBarras = data[i].EAN13;
+            storedItemData[itemID].referencia = data[i].Referencia;
+            storedItemData[itemID].descripcion = data[i].Descripcion;
+            storedItemData[itemID].unidadMedida = data[i].UM;
             storedItemData[itemID].precioBase = precioBase;
             storedItemData[itemID].precioDescuento = precioDescuento;
-            storedItemData[itemID].descuentoPorcentaje = (precioBase !== 0) ? ((precioBase - precioDescuento) / precioBase) * 100 : 0;
+            storedItemData[itemID].descuentoPorcentaje = descuentoPorcentaje;
         } else {
             storedItemData[itemID] = {
+                codigoBarras: data[i].EAN13,
+                referencia: data[i].Referencia,
+                descripcion: data[i].Descripcion,
+                unidadMedida: data[i].UM,
                 precioBase: precioBase,
                 precioDescuento: precioDescuento,
-                descuentoPorcentaje: (precioBase !== 0) ? ((precioBase - precioDescuento) / precioBase) * 100 : 0
+                descuentoPorcentaje: descuentoPorcentaje
             };
         }
-    
+
         localStorage.setItem('itemData', JSON.stringify(storedItemData));
     }
+    $('.Guardar').on('click', function() {
+        // Obtener datos del localStorage
+        var storedItemData = JSON.parse(localStorage.getItem('itemData')) || {};
     
-     // Manejador de eventos para el botón de importar
-     $('#import-file').on('change', function(e) {
-        var file = e.target.files[0];
-        if (file) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var data = e.target.result;
-                var workbook = XLSX.read(data, { type: 'binary' });
-                var worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                importedData = XLSX.utils.sheet_to_json(worksheet);
-                localStorage.setItem('importedData', JSON.stringify(importedData));
-
-                // Llena la tabla con los datos importados
-                displayImportedData();
-            };
-            reader.readAsBinaryString(file);
-        }
-    });
-// Función para llenar la tabla con los datos importados
-function displayImportedData() {
-    var tbodyItems = document.getElementById("tbodyItems");
-    tbodyItems.innerHTML = "";
-
-    importedData.forEach(function (item, index) {
-        var row = tbodyItems.insertRow(tbodyItems.rows.length);
-        var cellId = row.insertCell(0);
-        var cellItem = row.insertCell(1);
-        var cellEAN13 = row.insertCell(2);
-        var cellReferencia = row.insertCell(3);
-        var cellDescripcion = row.insertCell(4);
-        var cellUM = row.insertCell(5);
-        var cellPrecioBase = row.insertCell(6);
-        var cellPrecioDescuento = row.insertCell(7);
-        var cellDescuentoPorcentaje = row.insertCell(8);
-
-        cellId.innerHTML = index + 1;
-        cellItem.innerHTML = item["Item"];
-        cellEAN13.innerHTML = item["Código de Barras"];
-        cellReferencia.innerHTML = item["Referencia"];
-        cellDescripcion.innerHTML = item["Descripción"];
-        cellUM.innerHTML = item["UND"];
-        cellPrecioBase.innerHTML = formatMoneyWithoutDecimals(parseFloat(item["Precio Base"]));
-        cellPrecioDescuento.innerHTML = formatMoneyWithoutDecimals(parseFloat(item["Precio con Descuento"]));
-        cellDescuentoPorcentaje.innerHTML = formatPercentage(parseFloat(item["Descuento %"]));
-
-        // Agregar estos campos al objeto itemData en el almacenamiento local
-        var itemID = item["Item"] + '_' + index; // Genera un itemID único
-        storedItemData[itemID] = {
-            precioBase: parseFloat(item["Precio Base"].replace(/\./g, '').replace('$', '').replace(',', '.')),
-            precioDescuento: parseFloat(item["Precio con Descuento"].replace(/\./g, '').replace('$', '').replace(',', '.')),
-            descuentoPorcentaje: (parseFloat(item["Precio Base"].replace(/\./g, '').replace('$', '').replace(',', '.')) !== 0) ? 
-                                ((parseFloat(item["Precio Base"].replace(/\./g, '').replace('$', '').replace(',', '.')) - parseFloat(item["Precio con Descuento"].replace(/\./g, '').replace('$', '').replace(',', '.'))) /
-                                parseFloat(item["Precio Base"].replace(/\./g, '').replace('$', '').replace(',', '.'))) * 100 : 0,
-            EAN13: item["Código de Barras"],
-            Referencia: item["Referencia"],
-            Descripcion: item["Descripción"],
-            UM: item["UND"]
+        // Filtrar datos que cumplen con la condición (por ejemplo, Precio con Descuento mayor a 0)
+        var filteredData = Object.values(storedItemData).filter(function(item) {
+            // Verificar si el elemento tiene la propiedad 'precioDescuento' definida
+            return item && typeof item.precioDescuento !== 'undefined' && item.precioDescuento > 0;
+        });
+    
+        // Construir un objeto JSON con los datos filtrados
+        var jsonData = {
+            cotizacion: filteredData
         };
+        // Aquí puedes hacer lo que necesites con la cadena JSON, como enviarla a un servidor, mostrarla, etc.
+        console.log(jsonData);
+        // Limpiar el localStorage y la tabla en la interfaz web
+        clearLocalStorageAndTable();
+    
+        // Muestra un mensaje de éxito utilizando la librería SweetAlert2
+        Swal.fire({
+            icon: 'success',
+            title: 'Cotización Enviada',
+            text: 'La cotización se ha enviado correctamente.'
+        }).then((result) => {
+            // Después de que el usuario hace clic en "Aceptar", recargar la página
+            if (result.isConfirmed) {
+                window.location.reload();
+            }
+        });
     });
-
-    // Luego de agregar todos los datos importados, asegúrate de guardar todo en el almacenamiento local
-    localStorage.setItem('itemData', JSON.stringify(storedItemData));
-}
-
-
-        // Establecer valores iniciales para Precio Base, Precio con Descuento y Descuento %
-        var precioBase = parseFloat(item["Precio Base"].replace(/\./g, '').replace('$', '').replace(',', '.'));
-        var precioDescuento = precioBase;
-        var descuentoPorcentaje = 0;
-
-        // Llenar las celdas con los valores iniciales
-        cellPrecioBase.innerHTML = '<div contenteditable="true" class="edit-price" data-item-id="' + item["Item"] + '">' + formatMoneyWithoutDecimals(precioBase) + '</div>';
-        cellPrecioDescuento.innerHTML = '<div contenteditable="true" class="edit-price-discount" data-item-id="' + item["Item"] + '">' + formatMoneyWithoutDecimals(precioDescuento) + '</div>';
-        cellDescuentoPorcentaje.innerHTML = '<div contenteditable="true" class="edit-discount-percentage" data-item-id="' + item["Item"] + '">' + formatPercentage(descuentoPorcentaje) + '</div>';
-
-        // Verificar si el precio con descuento es mayor que el precio base
-        if (precioDescuento > precioBase) {
-            cellPrecioDescuento.querySelector('.edit-price-discount').classList.add('red-text');
-        }
-
-        // Guardar los datos del ítem en el almacenamiento local
-        saveItemData(cellPrecioBase);
-        saveItemData(cellPrecioDescuento);
-        saveItemData(cellDescuentoPorcentaje);
-    });
-
+    
+    function clearLocalStorageAndTable() {
+        // Establecer el localStorage en null
+        localStorage.setItem('itemData', null);
+    
+        // Limpiar la tabla en la interfaz web
+        clearTable();
+    }
+    
+    function clearTable() {
+        // Limpia la tabla en la interfaz web
+        const tbodyItems = document.getElementById("tbodyItems");
+        tbodyItems.innerHTML = "";
+    
+        // Reinicializa la tabla llamando a la función displayPage()
+        displayPage();
+    }
+    
     
     // Función para dar formato de porcentaje con el signo %
     function formatPercentage(percentage) {
         return Math.round(percentage) + '%';
     }
-
-
-
+});
