@@ -7,12 +7,23 @@ $(document).ready(function() {
         $('#table-container tbody tr').each(function() {
             var rowData = {};
             $(this).find('td').each(function(index, item) {
-                var columnName = $(item).attr('data-column');
-                var cellValue = $(item).text();
+                var columnName = $(item).attr('data-column') || index; // Usa el índice si data-column es indefinido
+                var cellValue;
+
+                // Verificar si es un campo de entrada
+                var inputField = $(item).find('input');
+                if (inputField.length > 0) {
+                    cellValue = inputField.val();
+                } else {
+                    cellValue = $(item).text();
+                }
+
                 rowData[columnName] = cellValue;
             });
             tableData.push(rowData);
         });
+        
+        console.log(JSON.stringify(tableData));
 
         // Enviar los datos al servidor (puedes usar Ajax para esto)
         $.ajax({

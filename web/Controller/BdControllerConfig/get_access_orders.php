@@ -1,4 +1,6 @@
+
 <?php
+session_start(); // Iniciar la sesión
 $servername = "localhost";
 $username = "superadmingh";
 $password = "G-H2023**07";

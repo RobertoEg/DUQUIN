@@ -253,37 +253,38 @@ function displayPage() {
         cell.closest('tr').find('.edit-discount-percentage').text(formatPercentage(descuento));
     }
     
-     // Función para guardar los datos del ítem
-     function saveItemData(cell) {
-        var itemID = cell.data('item-id');
-        var i = cell.closest('tr').index();
-        var precioBase = parseFloat(cell.closest('tr').find('.edit-price').text().replace(/\./g, '').replace('$', '').replace(',', '.'));
-        var precioDescuento = parseFloat(cell.closest('tr').find('.edit-price-discount').text().replace(/\./g, '').replace('$', '').replace(',', '.'));
-        var descuentoPorcentaje = parsePercentageValue(cell.closest('tr').find('.edit-discount-percentage').text());
+    // Función para guardar los datos del ítem
+function saveItemData(cell) {
+    var itemID = cell.data('item-id');
+    var i = cell.closest('tr').index();
+    var precioBase = parseFloat(cell.closest('tr').find('.edit-price').text().replace(/\./g, '').replace('$', '').replace(',', '.'));
+    var precioDescuento = parseFloat(cell.closest('tr').find('.edit-price-discount').text().replace(/\./g, '').replace('$', '').replace(',', '.'));
+    var descuentoPorcentaje = parsePercentageValue(cell.closest('tr').find('.edit-discount-percentage').text());
 
-        // Verificar si el ítem ya existe en el almacenamiento de datos
-        if (storedItemData[itemID]) {
-            storedItemData[itemID].codigoBarras = data[i].EAN13;
-            storedItemData[itemID].referencia = data[i].Referencia;
-            storedItemData[itemID].descripcion = data[i].Descripcion;
-            storedItemData[itemID].unidadMedida = data[i].UM;
-            storedItemData[itemID].precioBase = precioBase;
-            storedItemData[itemID].precioDescuento = precioDescuento;
-            storedItemData[itemID].descuentoPorcentaje = descuentoPorcentaje;
-        } else {
-            storedItemData[itemID] = {
-                codigoBarras: data[i].EAN13,
-                referencia: data[i].Referencia,
-                descripcion: data[i].Descripcion,
-                unidadMedida: data[i].UM,
-                precioBase: precioBase,
-                precioDescuento: precioDescuento,
-                descuentoPorcentaje: descuentoPorcentaje
-            };
-        }
-
-        localStorage.setItem('itemData', JSON.stringify(storedItemData));
+    // Verificar si el ítem ya existe en el almacenamiento de datos
+    if (storedItemData[itemID]) {
+        storedItemData[itemID].codigoBarras = data[i].EAN13;
+        storedItemData[itemID].referencia = data[i].Referencia;
+        storedItemData[itemID].descripcion = data[i].Descripcion;
+        storedItemData[itemID].unidadMedida = data[i].UM;
+        storedItemData[itemID].precioBase = precioBase;
+        storedItemData[itemID].precioDescuento = precioDescuento;
+        storedItemData[itemID].descuentoPorcentaje = descuentoPorcentaje;
+    } else {
+        storedItemData[itemID] = {
+            Item: itemID,  // Agregamos el número de ítem
+            codigoBarras: data[i].EAN13,
+            referencia: data[i].Referencia,
+            descripcion: data[i].Descripcion,
+            unidadMedida: data[i].UM,
+            precioBase: precioBase,
+            precioDescuento: precioDescuento,
+            descuentoPorcentaje: descuentoPorcentaje
+        };
     }
+
+    localStorage.setItem('itemData', JSON.stringify(storedItemData));
+}
     $('.Guardar').on('click', function() {
         // Obtener datos del localStorage
         var storedItemData = JSON.parse(localStorage.getItem('itemData')) || {};
@@ -298,10 +299,27 @@ function displayPage() {
         var jsonData = {
             cotizacion: filteredData
         };
-        // Aquí puedes hacer lo que necesites con la cadena JSON, como enviarla a un servidor, mostrarla, etc.
-        console.log(jsonData);
+        console.log(jsonData)
+    
         // Limpiar el localStorage y la tabla en la interfaz web
         clearLocalStorageAndTable();
+    
+        // Enviar el JSON al archivo PHP usando AJAX
+        $.ajax({
+            url: '/web/Controller/BdControllerConfig/Enviar_cotizacion/enviar_cotizacion_web.php',
+            method: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',  // Añade esta línea
+            data: JSON.stringify({ cotizacion: jsonData }),
+            success: function(response) {
+                // Manejar la respuesta del servidor si es necesario
+                console.log(response);
+            },
+            error: function() {
+                // Manejar errores de la solicitud AJAX si es necesario
+                console.error('Error al enviar la cotización al servidor.');
+            }
+        });
     
         // Muestra un mensaje de éxito utilizando la librería SweetAlert2
         Swal.fire({
@@ -332,6 +350,7 @@ function displayPage() {
         // Reinicializa la tabla llamando a la función displayPage()
         displayPage();
     }
+    
     
     
     // Función para dar formato de porcentaje con el signo %

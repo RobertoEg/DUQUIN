@@ -66,9 +66,9 @@ if (isset($_POST['cotizacionData'])) {
     $stmt->execute();
 
     if ($stmt->affected_rows > 0) {
-        // Copiar los datos de la tabla 'tabla_items_nit' a la tabla 'items'
+        // Copiar los datos de la tabla 'tabla_items_nit' a la tabla 'items' y calcular el descuento porcentaje
         $copyDataSQL = "INSERT INTO `items` (`order_id`, `item_number`, `codigo_barra`, `referencia`, `descripcion`, `unidad_empaque`, `precio_base`, `precio_con_descuento`, `descuento_porcentaje`, `estado`) 
-            SELECT ?, `Item`, `CodigoBarras`, `Referencia`, `Descripcion`, 'UND', `PrecioBase`, `PrecioDescuento`, 0, 0 FROM $tableName";
+            SELECT ?, `Item`, `CodigoBarras`, `Referencia`, `Descripcion`, 'UND', `PrecioBase`, `PrecioDescuento`, (1 - (`PrecioDescuento` / `PrecioBase`)) * 100, 'Pendiente' FROM $tableName";
 
         $stmtCopy = $conn->prepare($copyDataSQL);
         $stmtCopy->bind_param("i", $nextOrderID);

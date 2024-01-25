@@ -75,11 +75,16 @@
         </div>
     </div>
     <div class="import-export">
-        <p class="import-text">Importar</p>
+        <form id="import-form" action="/web/Controller/BdControllerConfig/.php" method="post" enctype="multipart/form-data">
+          <input type="file" name="xlsx-file" id="file-input" accept=".xlsx">
+          <input type="hidden" name="processed-data" id="processed-data" value="">
+          <label for="file-input">Importar</label>
+        </form>                                  
         <i class="fas fa-arrow-down"></i>
-        <p class="export-text">Exportar</p>
+        <button id="export-button">Exportar</button>
         <i class="fas fa-arrow-up"></i>
-    </div>
+      </div>
+</div>
 </div>
 <div>
     <div class="date-container">
@@ -88,7 +93,7 @@
 <table id="table-container" class="table">
     <thead>
         <tr>
-            <th>ID</th>
+            <th>Cotizacion</th>
             <th>Item</th>
             <th>Código de Barras</th>
             <th>Referencia</th>

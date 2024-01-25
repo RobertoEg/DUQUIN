@@ -72,7 +72,7 @@
     <div class="date-element"></div>
 </div>
 <div class="order">
-    <h3>Cotizaciones Nuevas</h3>
+    <h3>Cotizaciones aprobadas</h3>
     <div class="orders-container">
         <div id="new-orders">
         </div>
@@ -124,31 +124,45 @@ const currentDate = new Date();
 
 
 
+    document.addEventListener("DOMContentLoaded", function () {
+    // Realizar la petición AJAX para órdenes aprobadas
+    function fetchApprovedOrders() {
+        const approvedOrdersContainer = document.getElementById("new-orders");
 
-// Realizar la petición AJAX para órdenes aprobadas
-function fetchApprovedOrders() {
-  const approvedOrdersContainer = document.getElementById("approved-orders");
+        // Realizar la petición AJAX
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "/web/Controller/BdControllerConfig/historial_usr/historial.php", true);
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                // Parsear la respuesta JSON
+                const ordersData = JSON.parse(xhr.responseText);
 
-  // Realizar la petición AJAX
-  const xhr = new XMLHttpRequest();
-  xhr.open("GET", "/web/Controller/BdControllerConfig/get_access_orders.php", true);
-  xhr.onreadystatechange = function() {
-    if (xhr.readyState === 4 && xhr.status === 200) {
-      approvedOrdersContainer.innerHTML = xhr.responseText;
+                // Limpiar el contenedor antes de agregar nuevos elementos
+                approvedOrdersContainer.innerHTML = "";
+
+                // Iterar sobre los datos y agregar al contenedor
+                ordersData.forEach(function (order) {
+                    const orderInfo = document.createElement("div");
+                    orderInfo.className = "order-info";
+                    orderInfo.innerHTML = `
+                        <span class='razon-social'>${order.razonSocial}</span>
+                        <span class='order_id'>${order.order_id}</span><br>
+                        <span class='fecha_creacion'>${order.fecha_creacion}</span><br><br>
+                    `;
+                    approvedOrdersContainer.appendChild(orderInfo);
+                });
+            }
+        };
+        xhr.send();
     }
-  };
-  xhr.send();
-}
 
-// Realizar la primera consulta al cargar la página
-fetchNewOrders();
-fetchApprovedOrders();
+    // Realizar la primera consulta al cargar la página
+    fetchApprovedOrders();
 
-// Realizar la consulta cada 1 minuto para órdenes nuevas
-setInterval(fetchNewOrders, 60000); // 60000 ms = 1 minuto
+    // Realizar la consulta cada 1 minuto para órdenes aprobadas
+    setInterval(fetchApprovedOrders, 60000); // 60000 ms = 1 minuto
+});
 
-// Realizar la consulta cada 1 minuto para órdenes aprobadas
-setInterval(fetchApprovedOrders, 60000); // 60000 ms = 1 minuto
 
 // Obtener el elemento de la imagen por su ID
 const homeIcon = document.getElementById("HomeIcon");

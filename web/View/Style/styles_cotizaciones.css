@@ -327,63 +327,71 @@ h2 {
     text-align: center;
 }
 
-
 /* Estilos para la sección de importar y exportar */
+#import-form input[type="file"] {
+    opacity: 0;
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
 .import-export {
-    font-size: 15px;
-    position: fixed;
-    left: 58.7%;
-    top: 20%; /* Ajusta la distancia desde la parte superior según tu diseño */
-    display: flex;
-    align-items: center;
+    margin-left: 41%;
+    display: flex; /* Activa el modelo de caja flexible */
+    align-items: center; /* Alinea verticalmente los elementos en el centro */
 }
 
-.import-text,
-.export-text {
-    margin: 0;
-    margin-right: 15px;
-    font-weight: bold;
+.import-export label, #export-button {
+    background-color: transparent; /* Fondo transparente */
+    border: 1px solid #6f9dd1;
+    color: black; /* Texto en color negro */
+    padding: 6px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Sombra */
+    font-size: 12px;
 }
 
-.import-export i {
-    font-size: 20px;
-    margin-right: 35px;
+.import-export label:hover, #export-button:hover {
+    color: rgb(218, 205, 205); /* Cambiar el color del texto al pasar el mouse */
 }
 
 #table-container {
-    font-size: 15.5px;
-    margin-top: 50px;
+    font-size: 15px;
+    margin-top: 15px;
     overflow: hidden;
-    
 }
 
 /* Estilos para la tabla */
 .table {
     font-size: 35px;
-     width: 78%;
-     margin-left: 5%
-}
-
-.table th, .table td {
+    width: 90%; /* Aumenta el ancho de la tabla según tus necesidades */
+    margin-left: 5%;
+  }
+  
+  .table th, .table td {
     border: 1px solid #ddd;
     padding: 2px;
     text-align: center;
-}
-
-.table th {
+    white-space: nowrap; /* Evita que el texto se expanda hacia abajo */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Agrega puntos suspensivos si el texto es demasiado largo */
+    word-break: break-all; /* Controla cómo se rompen las palabras si el texto es largo */
+  }
+  
+  .table th {
     background-color: #f2f2f2;
     font-weight: bold;
-}
-
-/* Estilos para el contenido de la tabla */
-#tbodyItems tr:nth-child(even) {
+  }
+  
+  /* Estilos para el contenido de la tabla */
+  #tbodyItems tr:nth-child(even) {
     background-color: #f2f2f2;
-}
-
-#tbodyItems tr:hover {
+  }
+  
+  #tbodyItems tr:hover {
     background-color: #ddd;
-}
-
+  }
 
 
 

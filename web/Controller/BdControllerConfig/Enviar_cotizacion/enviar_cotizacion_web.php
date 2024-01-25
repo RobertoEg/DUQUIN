@@ -50,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Insertar datos de la cotización en la tabla 'items'
                 foreach ($data['cotizacion']['cotizacion'] as $item) {
                     $insertItemSQL = "INSERT INTO `items` (`order_id`, `item_number`, `codigo_barra`, `referencia`, `descripcion`, `unidad_empaque`, `precio_base`, `precio_con_descuento`, `descuento_porcentaje`, `estado`) 
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pendinte')";
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'Pendiente')";
 
                     $stmtItem = $conn->prepare($insertItemSQL);
                     $stmtItem->bind_param("iiisssddi", $nextOrderID, $item['Item'], $item['codigoBarras'], $item['referencia'], $item['descripcion'], $item['unidadMedida'], $item['precioBase'], $item['precioDescuento'], $item['descuentoPorcentaje']);
