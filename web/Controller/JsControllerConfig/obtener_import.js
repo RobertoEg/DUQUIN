@@ -5,55 +5,24 @@ $(document).ready(function() {
         method: 'GET',
         dataType: 'json',
         success: function (data) {
-            // Limpia el contenido actual de la tabla
-            $('#tbodyItems').empty();
-
             // Variable para almacenar referencias con errores
             var referenciasConErrores = [];
 
-            // Función para formatear el valor como precio colombiano sin decimales
-            function formatPrice(price) {
-                // Elimina el símbolo de moneda y las comas de miles
-                var numericValue = price.replace(/\$|,/g, '');
-
-                // Convierte a entero y luego lo formatea
-                return '$ ' + parseInt(numericValue).toLocaleString('es-CO', { minimumFractionDigits: 0 });
-            }
-
-            // Recorre los datos obtenidos y agrega filas a la tabla
-            data.forEach(function (item, index) {
-                // Calcula el porcentaje de descuento
+            // Verifica errores antes de mostrar la tabla
+            data.forEach(function (item) {
                 var precioBase = parseInt(item.PrecioBase.replace(/\$|,/g, ''));
                 var precioDescuento = parseInt(item.PrecioDescuento.replace(/\$|,/g, ''));
-                var descuentoPorcentaje = ((precioBase - precioDescuento) / precioBase) * 100;
 
-                // Formatea el porcentaje para mostrarlo sin decimales
-                var formattedDescuentoPorcentaje = descuentoPorcentaje.toFixed(0) + '%';
-
-                var row = '<tr>' +
-                    '<td>' + (index + 1) + '</td>' + // ID
-                    '<td>' + item.Item + '</td>' +
-                    '<td>' + item.CodigoBarras + '</td>' +
-                    '<td>' + item.Referencia + '</td>' +
-                    '<td>' + item.Descripcion + '</td>' +
-                    '<td>' + item.UND + '</td>' +
-                    '<td>' + formatPrice(item.PrecioBase) + '</td>' +
-                    '<td>' + formatPrice(item.PrecioDescuento) + '</td>' +
-                    '<td>' + formattedDescuentoPorcentaje + '</td>' +
-                    '</tr>';
-
-                // Verifica si el precio con descuento es mayor que el precio base
                 if (precioDescuento > precioBase) {
-                    // Aplica los estilos y animaciones
-                    row = $(row).css('color', 'red');
                     referenciasConErrores.push(item.Referencia);
                 }
-
-                $('#tbodyItems').append(row);
             });
 
-            // Muestra una alerta profesional con SweetAlert2 si hay referencias con errores
+            // Oculta el botón si hay referencias con errores
             if (referenciasConErrores.length > 0) {
+                $('.Guardar').hide();
+
+                // Muestra una alerta profesional con SweetAlert2 si hay referencias con errores
                 Swal.fire({
                     icon: 'error',
                     title: 'Errores en las siguientes referencias:',
@@ -63,6 +32,56 @@ $(document).ready(function() {
                         title: 'my-custom-title-class', // Clase personalizada para el título
                         content: 'my-custom-content-class' // Clase personalizada para el contenido
                     }
+                }).then(function() {
+                    // Redirige al usuario a la página deseada después de hacer clic en OK
+                    window.location.href = '/web/View/Users/cotizaciones.html';
+                });
+            } else {
+                // Muestra el botón si no hay referencias con errores
+                $('.Guardar').show();
+
+                // Limpia el contenido actual de la tabla
+                $('#tbodyItems').empty();
+
+                // Función para formatear el valor como precio colombiano sin decimales
+                function formatPrice(price) {
+                    // Elimina el símbolo de moneda y las comas de miles
+                    var numericValue = price.replace(/\$|,/g, '');
+
+                    // Convierte a entero y luego lo formatea
+                    return '$ ' + parseInt(numericValue).toLocaleString('es-CO', { minimumFractionDigits: 0 });
+                }
+
+                // Recorre los datos obtenidos y agrega filas a la tabla
+                data.forEach(function (item, index) {
+                    // Calcula el porcentaje de descuento
+                    var precioBase = parseInt(item.PrecioBase.replace(/\$|,/g, ''));
+                    var precioDescuento = parseInt(item.PrecioDescuento.replace(/\$|,/g, ''));
+                    var descuentoPorcentaje = ((precioBase - precioDescuento) / precioBase) * 100;
+
+                    // Formatea el porcentaje para mostrarlo sin decimales
+                    var formattedDescuentoPorcentaje = descuentoPorcentaje.toFixed(0) + '%';
+
+                    var row = '<tr>' +
+                        '<td>' + (index + 1) + '</td>' + // ID
+                        '<td>' + item.Item + '</td>' +
+                        '<td>' + item.CodigoBarras + '</td>' +
+                        '<td>' + item.Referencia + '</td>' +
+                        '<td>' + item.Descripcion + '</td>' +
+                        '<td>' + item.UND + '</td>' +
+                        '<td>' + formatPrice(item.PrecioBase) + '</td>' +
+                        '<td>' + formatPrice(item.PrecioDescuento) + '</td>' +
+                        '<td>' + formattedDescuentoPorcentaje + '</td>' +
+                        '</tr>';
+
+                    // Verifica si el precio con descuento es mayor que el precio base
+                    if (precioDescuento > precioBase) {
+                        // Aplica los estilos y animaciones
+                        row = $(row).css('color', 'red');
+                        referenciasConErrores.push(item.Referencia);
+                    }
+
+                    $('#tbodyItems').append(row);
                 });
             }
         },

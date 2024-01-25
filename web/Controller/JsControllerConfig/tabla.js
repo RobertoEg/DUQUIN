@@ -285,54 +285,70 @@ function saveItemData(cell) {
 
     localStorage.setItem('itemData', JSON.stringify(storedItemData));
 }
-    $('.Guardar').on('click', function() {
-        // Obtener datos del localStorage
-        var storedItemData = JSON.parse(localStorage.getItem('itemData')) || {};
-    
-        // Filtrar datos que cumplen con la condición (por ejemplo, Precio con Descuento mayor a 0)
-        var filteredData = Object.values(storedItemData).filter(function(item) {
-            // Verificar si el elemento tiene la propiedad 'precioDescuento' definida
-            return item && typeof item.precioDescuento !== 'undefined' && item.precioDescuento > 0;
-        });
-    
-        // Construir un objeto JSON con los datos filtrados
-        var jsonData = {
-            cotizacion: filteredData
-        };
-        console.log(jsonData)
-    
-        // Limpiar el localStorage y la tabla en la interfaz web
-        clearLocalStorageAndTable();
-    
-        // Enviar el JSON al archivo PHP usando AJAX
-        $.ajax({
-            url: '/web/Controller/BdControllerConfig/Enviar_cotizacion/enviar_cotizacion_web.php',
-            method: 'POST',
-            dataType: 'json',
-            contentType: 'application/json',  // Añade esta línea
-            data: JSON.stringify({ cotizacion: jsonData }),
-            success: function(response) {
-                // Manejar la respuesta del servidor si es necesario
-                console.log(response);
-            },
-            error: function() {
-                // Manejar errores de la solicitud AJAX si es necesario
-                console.error('Error al enviar la cotización al servidor.');
-            }
-        });
-    
-        // Muestra un mensaje de éxito utilizando la librería SweetAlert2
-        Swal.fire({
-            icon: 'success',
-            title: 'Cotización Enviada',
-            text: 'La cotización se ha enviado correctamente.'
-        }).then((result) => {
-            // Después de que el usuario hace clic en "Aceptar", recargar la página
-            if (result.isConfirmed) {
-                window.location.reload();
-            }
-        });
+$('.Guardar').on('click', function() {
+    // Obtener datos del localStorage
+    var storedItemData = JSON.parse(localStorage.getItem('itemData')) || {};
+
+    // Verificar si hay algún ítem con precio con descuento mayor al precio base
+    var hasInvalidData = Object.values(storedItemData).some(function(item) {
+        return item && typeof item.precioDescuento !== 'undefined' && item.precioDescuento > item.precioBase;
     });
+
+    // Si hay algún ítem con precio con descuento mayor al precio base, mostrar mensaje y salir de la función
+    if (hasInvalidData) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'Hay ítems con precio con descuento mayor al precio base. Corrige los precios antes de guardar.'
+        });
+        return;
+    }
+
+    // Filtrar datos que cumplen con la condición (por ejemplo, Precio con Descuento mayor a 0)
+    var filteredData = Object.values(storedItemData).filter(function(item) {
+        // Verificar si el elemento tiene la propiedad 'precioDescuento' definida
+        return item && typeof item.precioDescuento !== 'undefined' && item.precioDescuento > 0;
+    });
+
+    // Construir un objeto JSON con los datos filtrados
+    var jsonData = {
+        cotizacion: filteredData
+    };
+    console.log(jsonData)
+
+    // Limpiar el localStorage y la tabla en la interfaz web
+    clearLocalStorageAndTable();
+
+    // Enviar el JSON al archivo PHP usando AJAX
+    $.ajax({
+        url: '/web/Controller/BdControllerConfig/Enviar_cotizacion/enviar_cotizacion_web.php',
+        method: 'POST',
+        dataType: 'json',
+        contentType: 'application/json',  // Añade esta línea
+        data: JSON.stringify({ cotizacion: jsonData }),
+        success: function(response) {
+            // Manejar la respuesta del servidor si es necesario
+            console.log(response);
+        },
+        error: function() {
+            // Manejar errores de la solicitud AJAX si es necesario
+            console.error('Error al enviar la cotización al servidor.');
+        }
+    });
+
+    // Muestra un mensaje de éxito utilizando la librería SweetAlert2
+    Swal.fire({
+        icon: 'success',
+        title: 'Cotización Enviada',
+        text: 'La cotización se ha enviado correctamente.'
+    }).then((result) => {
+        // Después de que el usuario hace clic en "Aceptar", recargar la página
+        if (result.isConfirmed) {
+            window.location.reload();
+        }
+    });
+});
+
     
     function clearLocalStorageAndTable() {
         // Establecer el localStorage en null
